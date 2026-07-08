@@ -1,0 +1,49 @@
+name: dbt CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  dbt-build:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: dbt_user
+          POSTGRES_PASSWORD: dbt_password
+          POSTGRES_DB: classicmodels_analytics
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U dbt_user -d classicmodels_analytics"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Create dbt profile
+        run: cp profiles.example.yml profiles.yml
+
+      - name: Install dbt packages
+        run: cd classicmodels_modeling && dbt deps --profiles-dir ..
+
+      - name: Seed raw data
+        run: cd classicmodels_modeling && dbt seed --profiles-dir ..
+
+      - name: Build and test dbt project
+        run: cd classicmodels_modeling && dbt build --profiles-dir ..

@@ -1,0 +1,53 @@
+version: 2
+
+sources:
+  - name: classicmodels
+    description: Raw operational tables for order-management analytics.
+    schema: "{{ var('source_schema') }}"
+    tables:
+      - name: customers
+        description: Raw customer master data.
+        columns:
+          - name: customernumber
+            tests: [not_null, unique]
+      - name: employees
+        description: Raw employee and sales representative data.
+        columns:
+          - name: employeenumber
+            tests: [not_null, unique]
+      - name: offices
+        description: Raw office location data.
+        columns:
+          - name: officecode
+            tests: [not_null, unique]
+      - name: orders
+        description: Raw order header data.
+        columns:
+          - name: ordernumber
+            tests: [not_null, unique]
+          - name: status
+            tests:
+              - accepted_values:
+                  values: ['Shipped', 'Resolved', 'Cancelled', 'On Hold']
+      - name: orderdetails
+        description: Raw order line detail data.
+        tests:
+          - dbt_utils.unique_combination_of_columns:
+              combination_of_columns:
+                - ordernumber
+                - orderlinenumber
+        columns:
+          - name: ordernumber
+            tests: [not_null]
+          - name: productcode
+            tests: [not_null]
+      - name: products
+        description: Raw product master data.
+        columns:
+          - name: productcode
+            tests: [not_null, unique]
+      - name: productlines
+        description: Raw product line reference data.
+        columns:
+          - name: productline
+            tests: [not_null, unique]

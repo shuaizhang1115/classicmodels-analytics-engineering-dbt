@@ -1,0 +1,93 @@
+version: 2
+
+models:
+  - name: stg_customers
+    description: Cleaned customer master data with standardized field names.
+    columns:
+      - name: customer_number
+        tests: [not_null, unique]
+      - name: sales_rep_employee_number
+        tests:
+          - relationships:
+              to: ref('stg_employees')
+              field: employee_number
+
+  - name: stg_employees
+    description: Cleaned employee and sales representative data.
+    columns:
+      - name: employee_number
+        tests: [not_null, unique]
+      - name: office_code
+        tests:
+          - relationships:
+              to: ref('stg_offices')
+              field: office_code
+
+  - name: stg_offices
+    description: Cleaned office geography data.
+    columns:
+      - name: office_code
+        tests: [not_null, unique]
+
+  - name: stg_orders
+    description: Cleaned order header data.
+    columns:
+      - name: order_number
+        tests: [not_null, unique]
+      - name: customer_number
+        tests:
+          - relationships:
+              to: ref('stg_customers')
+              field: customer_number
+      - name: order_status
+        tests:
+          - accepted_values:
+              values: ['Shipped', 'Resolved', 'Cancelled', 'On Hold']
+
+  - name: stg_orderdetails
+    description: Cleaned order line detail data.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - order_number
+            - order_line_number
+    columns:
+      - name: order_number
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_orders')
+              field: order_number
+      - name: product_code
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_products')
+              field: product_code
+      - name: quantity_ordered
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "> 0"
+      - name: price_each
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "> 0"
+
+  - name: stg_products
+    description: Cleaned product master data.
+    columns:
+      - name: product_code
+        tests: [not_null, unique]
+      - name: product_line
+        tests:
+          - relationships:
+              to: ref('stg_productlines')
+              field: product_line
+
+  - name: stg_productlines
+    description: Cleaned product line reference data.
+    columns:
+      - name: product_line
+        tests: [not_null, unique]

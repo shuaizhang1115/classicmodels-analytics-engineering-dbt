@@ -1,0 +1,13 @@
+version: 2
+
+exposures:
+  - name: order_performance_dashboard
+    label: Order Performance Dashboard
+    type: dashboard
+    maturity: medium
+    description: Dashboard concept supported by orders_obt for revenue, margin, shipment, customer, and product-line analytics.
+    depends_on:
+      - ref('orders_obt')
+    owner:
+      name: Analytics Engineering Portfolio
+      email: analytics@example.com

@@ -1,0 +1,6 @@
+employeenumber,lastname,firstname,extension,email,officecode,reportsto,jobtitle
+1002,Murphy,Diane,x5800,dmurphy@classicmodelcars.com,1,,President
+1165,Jennings,Leslie,x3291,ljennings@classicmodelcars.com,1,1002,Sales Rep
+1166,Thompson,Leslie,x4065,lthompson@classicmodelcars.com,1,1002,Sales Rep
+1370,Hernandez,Gerard,x2028,ghernandez@classicmodelcars.com,4,1002,Sales Rep
+1504,Jones,Barry,x102,bjones@classicmodelcars.com,2,1002,Sales Rep

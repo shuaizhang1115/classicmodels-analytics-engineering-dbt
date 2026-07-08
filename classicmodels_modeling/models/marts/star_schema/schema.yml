@@ -1,0 +1,92 @@
+version: 2
+
+models:
+  - name: fact_orders
+    description: Order-line fact table for revenue, margin, fulfillment, customer, product, and sales-rep analysis.
+    columns:
+      - name: fact_order_key
+        description: Surrogate key for one order line.
+        tests: [not_null, unique]
+      - name: customer_key
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_customers')
+              field: customer_key
+      - name: employee_key
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_employees')
+              field: employee_key
+      - name: office_key
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_offices')
+              field: office_key
+      - name: product_key
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_products')
+              field: product_key
+      - name: order_date
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_dates')
+              field: date_day
+      - name: quantity_ordered
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "> 0"
+      - name: price_each
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "> 0"
+      - name: line_revenue
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "> 0"
+
+  - name: dim_customers
+    description: Customer dimension with customer identity, geography, credit limit, and sales-rep assignment.
+    columns:
+      - name: customer_key
+        tests: [not_null, unique]
+      - name: customer_number
+        tests: [not_null, unique]
+
+  - name: dim_employees
+    description: Employee and sales-representative dimension.
+    columns:
+      - name: employee_key
+        tests: [not_null, unique]
+      - name: employee_number
+        tests: [not_null, unique]
+
+  - name: dim_offices
+    description: Office location and territory dimension.
+    columns:
+      - name: office_key
+        tests: [not_null, unique]
+      - name: office_code
+        tests: [not_null, unique]
+
+  - name: dim_products
+    description: Product dimension with vendor, product line, inventory, buy price, and MSRP attributes.
+    columns:
+      - name: product_key
+        tests: [not_null, unique]
+      - name: product_code
+        tests: [not_null, unique]
+
+  - name: dim_dates
+    description: Calendar date dimension generated from source order-date bounds.
+    columns:
+      - name: date_day
+        tests: [not_null, unique]

@@ -1,0 +1,38 @@
+version: 2
+
+models:
+  - name: orders_obt
+    description: BI-ready One Big Table with one row per order line and denormalized customer, product, sales-rep, office, revenue, margin, and shipment attributes.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - order_number
+            - order_line_number
+    columns:
+      - name: order_number
+        tests: [not_null]
+      - name: order_line_number
+        tests: [not_null]
+      - name: order_status
+        tests:
+          - accepted_values:
+              values: ['Shipped', 'Resolved', 'Cancelled', 'On Hold']
+      - name: customer_number
+        tests: [not_null]
+      - name: product_code
+        tests: [not_null]
+      - name: quantity_ordered
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "> 0"
+      - name: price_each
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "> 0"
+      - name: line_revenue
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "> 0"

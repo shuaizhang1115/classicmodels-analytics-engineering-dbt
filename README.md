@@ -48,7 +48,7 @@ This project converts raw order, customer, employee, office, and product data in
 │   ├── macros/                    # schema naming override for local demo schemas
 │   ├── dbt_project.yml
 │   └── packages.yml
-│   ├── scripts/validate_project.py
+│   ├── scripts/                   # python project validation
 ├── docs/                          # architecture, modeling notes, interview story
 ├── sql/                           # business analysis query examples
 ├── .github/workflows/             # dbt CI example
@@ -132,6 +132,8 @@ This repository includes a lightweight Python validation script to check the dbt
 
 ```bash
 python scripts/validate_project.py
+```
+
 ---
 
 ## Local setup
